@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joseph Saah | Admin Dashboard</title>
+    <meta
+        name="description"
+        content="Protected admin dashboard for managing Joseph Saah's portfolio projects."
+    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+        rel="stylesheet"
+    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <header class="site-header">
+            <nav class="nav">
+                <a class="brand" href="{{ url_for('index') }}">
+                    <img src="{{ url_for('static', filename='profile.jpeg') }}" alt="Joseph Saah" class="brand-avatar">
+                    <span class="brand-name">Joseph Saah</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('graphics') }}">Graphics</a></li>
+                    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="site-main">
+            <section class="subpage-hero">
+                <div class="subpage-layout">
+                    <div>
+                        <p class="eyebrow">Project Dashboard</p>
+                        <h1>Manage your portfolio from one backend-powered workspace.</h1>
+                        <p class="section-intro">
+                            Add new work to your main portfolio or graphics page, upload a cover
+                            image, and remove projects whenever you need to update your site.
+                        </p>
+                        <div class="hero-actions">
+                            <a href="#admin-form" class="btn btn-primary">Add a Project</a>
+                            <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Portfolio</a>
+                            <form
+                                method="post"
+                                action="{{ url_for('logout') }}"
+                                class="hero-action-form"
+                                data-confirm-message="Log out of the admin dashboard now?"
+                                data-submitting-text="Logging out..."
+                            >
+                                <button type="submit" class="btn btn-secondary admin-logout-button">Logout</button>
+                            </form>
+                        </div>
+                    </div>
+                    <aside class="subpage-sidecard">
+                        <p class="card-tag">Dashboard Summary</p>
+                        <h3>Your projects are now stored in the database, not just the browser.</h3>
+                        <ul class="feature-list">
+                            <li>{{ main_count }} main portfolio project{{ '' if main_count == 1 else 's' }}</li>
+                            <li>{{ graphics_count }} graphics project{{ '' if graphics_count == 1 else 's' }}</li>
+                            <li>{{ total_count }} total saved project{{ '' if total_count == 1 else 's' }}</li>
+                        </ul>
+                    </aside>
+                </div>
+            </section>
+
+            <section class="section" id="admin-form">
+                <div class="section-heading">
+                    <p class="eyebrow">{{ "Update Project" if editing_project else "Add Project" }}</p>
+                    <h2>{{ "Edit a saved project and publish the changes." if editing_project else "Create a project card for your portfolio." }}</h2>
+                    <p class="section-intro">
+                        {% if editing_project %}
+                            Update the details below and save them back into your portfolio database.
+                        {% else %}
+                            Fill in the details below, choose where the project should appear, and save
+                            it directly into your site database.
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="admin-shell">
+                    <article class="admin-form-card">
+                        <form
+                            class="admin-form"
+                            method="post"
+                            action="{{ url_for('update_project', project_id=editing_project.id) if editing_project else url_for('add_project') }}"
+                            enctype="multipart/form-data"
+                            data-project-preview-form
+                            data-dirty-guard-form
+                            data-initial-image="{{ editing_project.image_url if editing_project and editing_project.image_url else '' }}"
+                            data-initial-title="{{ editing_project.title if editing_project else '' }}"
+                            data-confirm-message="{{ 'Update this project on your portfolio now?' if editing_project else 'Save this new project to your portfolio now?' }}"
+                            data-submitting-text="{{ 'Updating...' if editing_project else 'Saving...' }}"
+                        >
+                            <div class="form-grid">
+                                <label class="form-group">
+                                    <span>Show on</span>
+                                    <select name="target" class="admin-input" data-preview-target>
+                                        <option value="main" {{ "selected" if editing_project and editing_project.target == "main" else "" }}>Main Portfolio</option>
+                                        <option value="graphics" {{ "selected" if editing_project and editing_project.target == "graphics" else "" }}>Graphics Page</option>
+                                    </select>
+                                </label>
+                                <label class="form-group">
+                                    <span>Category</span>
+                                    <select name="category" class="admin-input" data-preview-category>
+                                        {% for category in categories %}
+                                            <option value="{{ category }}" {{ "selected" if editing_project and editing_project.category == category else "" }}>
+                                                {{ category }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
+                            </div>
+
+                            <label class="form-group">
+                                <span>Project title</span>
+                                    <input
+                                        type="text"
+                                        name="title"
+                                        class="admin-input"
+                                        placeholder="Campaign Visual Set"
+                                        value="{{ editing_project.title if editing_project else '' }}"
+                                        data-preview-title
+                                        required
+                                    >
+                                </label>
+
+                            <label class="form-group">
+                                <span>Description</span>
+                                <textarea
+                                    name="description"
+                                    class="admin-input admin-textarea"
+                                    placeholder="Describe the project clearly so visitors understand what it is about."
+                                    data-preview-description
+                                    required
+                                >{{ editing_project.description if editing_project else '' }}</textarea>
+                            </label>
+
+                            <div class="form-grid">
+                                <label class="form-group">
+                                    <span>Tags</span>
+                                    <input
+                                        type="text"
+                                        name="tags"
+                                        class="admin-input"
+                                        placeholder="Branding, Poster, UI"
+                                        value="{{ editing_project.tags if editing_project else '' }}"
+                                        data-preview-tags
+                                    >
+                                </label>
+                                <label class="form-group">
+                                    <span>{{ "Replace picture" if editing_project else "Select picture" }}</span>
+                                    <input
+                                        type="file"
+                                        name="imageFile"
+                                        class="admin-input"
+                                        accept="image/*"
+                                        data-preview-image
+                                    >
+                                    <small class="form-help">
+                                        {% if editing_project and editing_project.image_filename %}
+                                            Leave this empty to keep the current saved image, or choose a new one to replace it.
+                                        {% else %}
+                                            Choose an image from your device. It will be stored in `static/uploads`.
+                                        {% endif %}
+                                    </small>
+                                </label>
+                            </div>
+
+                            <div class="form-grid">
+                                <label class="form-group">
+                                    <span>Project link</span>
+                                    <input
+                                        type="text"
+                                        name="link"
+                                        class="admin-input"
+                                        placeholder="https://example.com/project"
+                                        value="{{ editing_project.link if editing_project else '' }}"
+                                        data-preview-link
+                                    >
+                                </label>
+                                <label class="form-group">
+                                    <span>Link label</span>
+                                    <input
+                                        type="text"
+                                        name="linkLabel"
+                                        class="admin-input"
+                                        placeholder="View Project"
+                                        value="{{ editing_project.link_label if editing_project else '' }}"
+                                        data-preview-link-label
+                                    >
+                                </label>
+                            </div>
+
+                            <div class="admin-actions">
+                                <div class="admin-form-buttons">
+                                    <button type="submit" class="btn btn-primary">
+                                        {{ "Update Project" if editing_project else "Save Project" }}
+                                    </button>
+                                    {% if editing_project %}
+                                        <a
+                                            href="{{ url_for('dashboard') }}"
+                                            class="admin-action-button"
+                                            data-discard-link
+                                            data-discard-message="You have unsaved changes on this project. Cancel editing anyway?"
+                                        >
+                                            Cancel Editing
+                                        </a>
+                                    {% endif %}
+                                </div>
+                                {% if form_error %}
+                                    <p class="admin-feedback error">{{ form_error }}</p>
+                                {% elif form_success %}
+                                    <p class="admin-feedback success">{{ form_success }}</p>
+                                {% else %}
+                                    <p class="admin-feedback">
+                                        {{ "Save your changes and the updated version will appear on the site immediately." if editing_project else "Add a project and it will appear on the site immediately." }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </article>
+
+                    <aside class="admin-summary">
+                        <article class="admin-preview-card">
+                            <div class="admin-preview-header">
+                                <p class="card-tag">Live Preview</p>
+                                <span class="admin-preview-target" data-preview-target-label>{{ "Graphics Page" if editing_project and editing_project.target == "graphics" else "Main Portfolio" }}</span>
+                            </div>
+                            <article class="project-card dynamic-project-card admin-preview-stage preview-main" data-preview-card>
+                                {% if editing_project and editing_project.image_url %}
+                                    <div class="dynamic-media" data-preview-media>
+                                        <img src="{{ editing_project.image_url }}" alt="{{ editing_project.title }}" class="dynamic-image">
+                                    </div>
+                                {% else %}
+                                    <div class="placeholder-visual" data-preview-media></div>
+                                {% endif %}
+                                <p class="card-tag" data-preview-category-label>{{ editing_project.category if editing_project else "Graphic Design" }}</p>
+                                <h3 data-preview-title-label>{{ editing_project.title if editing_project else "Campaign Visual Set" }}</h3>
+                                <p data-preview-description-label>
+                                    {{ editing_project.description if editing_project else "Describe the project clearly so visitors understand what it is about." }}
+                                </p>
+                                <div class="project-meta" data-preview-tags-label>
+                                    {% if editing_project and editing_project.tags_list %}
+                                        {% for tag in editing_project.tags_list %}
+                                            <span>{{ tag }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span>Branding</span>
+                                        <span>Poster</span>
+                                        <span>UI</span>
+                                    {% endif %}
+                                </div>
+                                <a
+                                    href="{{ editing_project.link if editing_project and editing_project.link else '#' }}"
+                                    class="project-link"
+                                    data-preview-link-anchor
+                                    {% if not editing_project or not (editing_project.link or editing_project.link_label) %}style="display: none;"{% endif %}
+                                >
+                                    {{ editing_project.link_label if editing_project and editing_project.link_label else "View Project" }}
+                                </a>
+                                <button type="button" class="admin-action-button preview-open-button" data-open-preview-modal>
+                                    Open Full Preview
+                                </button>
+                                <p class="preview-hint" data-preview-hint>
+                                    {{ "This preview is showing the project you are editing." if editing_project else "This preview updates as you type." }}
+                                </p>
+                            </article>
+                        </article>
+                        <article class="admin-summary-card">
+                            <p class="card-tag">Main Portfolio</p>
+                            <h3>{{ main_count }}</h3>
+                            <p>Projects currently showing on the home page.</p>
+                        </article>
+                        <article class="admin-summary-card">
+                            <p class="card-tag">Graphics Page</p>
+                            <h3>{{ graphics_count }}</h3>
+                            <p>Projects currently showing on the graphics page.</p>
+                        </article>
+                        <article class="admin-summary-card">
+                            <p class="card-tag">Total Saved</p>
+                            <h3>{{ total_count }}</h3>
+                            <p>Projects currently stored in the portfolio database.</p>
+                        </article>
+                    </aside>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-heading">
+                    <p class="eyebrow">Manage Projects</p>
+                    <h2>Review, update, and remove saved projects.</h2>
+                    <p class="section-intro">
+                        Every project below is coming from the backend database. You can reopen any
+                        project in the form for editing, or delete it completely from the site.
+                    </p>
+                </div>
+
+                <div class="admin-list-wrap">
+                    <section class="admin-list-section">
+                        <div class="admin-list-header">
+                            <h3>Saved Projects</h3>
+                            <div class="admin-header-actions">
+                                <p class="admin-list-note">Tap a project to edit it, or remove it when you no longer need it.</p>
+                            </div>
+                        </div>
+                        <div class="admin-list">
+                            {% if projects %}
+                                {% for project in projects %}
+                                    <article class="admin-project-card">
+                                        {% if project.image_url %}
+                                            <div class="admin-project-media">
+                                                <img src="{{ project.image_url }}" alt="{{ project.title }}" class="admin-project-image">
+                                            </div>
+                                        {% endif %}
+                                        <div class="admin-project-meta">
+                                            <span class="admin-badge admin-badge-strong">{{ project.target|capitalize }}</span>
+                                            <span class="admin-badge">{{ project.category }}</span>
+                                        </div>
+                                        <h3>{{ project.title }}</h3>
+                                        <p class="admin-project-category">{{ project.category }}</p>
+                                        <p>{{ project.description }}</p>
+                                        {% if project.tags_list %}
+                                            <div class="admin-chip-group">
+                                                {% for tag in project.tags_list %}
+                                                    <span>{{ tag }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                        <div class="admin-project-actions">
+                                            <a
+                                                href="{{ url_for('dashboard', edit=project.id) }}"
+                                                class="admin-action-button"
+                                                data-discard-link
+                                                data-discard-message="You have unsaved changes in the current form. Open this project for editing anyway?"
+                                            >
+                                                Update
+                                            </a>
+                                            {% if project.link %}
+                                                <a href="{{ project.link }}" class="project-link" target="_blank" rel="noreferrer">
+                                                    {{ project.link_label or "View Project" }}
+                                                </a>
+                                            {% endif %}
+                                            <form
+                                                method="post"
+                                                action="{{ url_for('delete_project', project_id=project.id) }}"
+                                                data-confirm-message="Delete '{{ project.title }}' permanently from your portfolio? This cannot be undone."
+                                                data-submitting-text="Deleting..."
+                                            >
+                                                <button type="submit" class="admin-action-button">Delete</button>
+                                            </form>
+                                        </div>
+                                    </article>
+                                {% endfor %}
+                            {% else %}
+                                <div class="admin-empty-state">
+                                    No projects have been saved yet. Add your first one above.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </section>
+                </div>
+            </section>
+        </main>
+
+        <div class="preview-modal is-hidden" data-preview-modal>
+            <div class="preview-modal-backdrop" data-close-preview-modal></div>
+            <div class="preview-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="preview-modal-title">
+                <button type="button" class="preview-modal-close" aria-label="Close preview" data-close-preview-modal>
+                    x
+                </button>
+                <div class="preview-modal-layout">
+                    <div class="preview-modal-media" data-modal-media>
+                        <div class="placeholder-visual preview-modal-placeholder"></div>
+                    </div>
+                    <div class="preview-modal-copy">
+                        <p class="card-tag" data-modal-category>Graphic Design</p>
+                        <h2 id="preview-modal-title" data-modal-title>Campaign Visual Set</h2>
+                        <p class="preview-modal-target" data-modal-target>Main Portfolio</p>
+                        <p class="preview-modal-description" data-modal-description>
+                            Describe the project clearly so visitors understand what it is about.
+                        </p>
+                        <div class="project-meta preview-modal-tags" data-modal-tags>
+                            <span>Branding</span>
+                            <span>Poster</span>
+                            <span>UI</span>
+                        </div>
+                        <a href="#" class="project-link preview-modal-link" data-modal-link>View Project</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <p class="footer-title">Joseph Saah</p>
+                    <p class="footer-text">
+                        Protected admin dashboard for managing projects across the main portfolio and graphics page.
+                    </p>
+                </div>
+                <div class="footer-column">
+                    <p class="footer-heading">Pages</p>
+                    <a href="{{ url_for('index') }}">Main Portfolio</a>
+                    <a href="{{ url_for('graphics') }}">Graphics Portfolio</a>
+                    <a href="{{ url_for('dashboard') }}">Admin Dashboard</a>
+                </div>
+                <div class="footer-column">
+                    <p class="footer-heading">Contact</p>
+                    <a href="mailto:saahjoseph90@gmail.com">saahjoseph90@gmail.com</a>
+                    <a href="{{ url_for('index') }}#contact">Contact Section</a>
+                    <a href="{{ url_for('index') }}#projects">View Projects</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Joseph Saah. All rights reserved.</p>
+                <p>Project admin dashboard.</p>
+            </div>
+        </footer>
+    </div>
+    <script src="{{ url_for('static', filename='dashboard-preview.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='admin-actions.js') }}" defer></script>
+</body>
+</html>

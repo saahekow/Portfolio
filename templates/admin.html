@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joseph Saah | Admin Login</title>
+    <meta
+        name="description"
+        content="Login page for Joseph Saah's portfolio admin dashboard."
+    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+        rel="stylesheet"
+    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="auth-page">
+    <main class="auth-main page-shell" data-admin-login-page>
+        <section class="auth-card">
+            <div class="auth-header">
+                <div class="auth-identity">
+                    <img src="{{ url_for('static', filename='profile.jpeg') }}" alt="Joseph Saah" class="brand-avatar">
+                    <span class="brand-name">Joseph Saah</span>
+                </div>
+                <p class="eyebrow">Admin Login</p>
+                <h1>Login to continue to the dashboard.</h1>
+                <p class="auth-text">
+                    Enter your admin details below. After a successful login, you will be taken
+                    directly to your project dashboard.
+                </p>
+            </div>
+
+            <form
+                class="admin-form auth-form"
+                method="post"
+                action="{{ url_for('admin_login') }}"
+                data-submitting-text="Signing in..."
+            >
+                <label class="form-group">
+                    <span>Username</span>
+                    <input
+                        type="text"
+                        name="username"
+                        class="admin-input"
+                        placeholder="Enter admin username"
+                        required
+                    >
+                </label>
+                <label class="form-group">
+                    <span>Password</span>
+                    <input
+                        type="password"
+                        name="password"
+                        class="admin-input"
+                        placeholder="Enter password"
+                        required
+                    >
+                </label>
+                <div class="admin-actions auth-actions">
+                    <button type="submit" class="btn btn-primary auth-submit">Login</button>
+                    <p class="admin-feedback{% if error %} error{% endif %}">
+                        {% if error %}
+                            {{ error }}
+                        {% else %}
+                            Sign in to open the admin dashboard.
+                        {% endif %}
+                    </p>
+                </div>
+            </form>
+
+            <div class="auth-footer">
+                <a href="{{ url_for('index') }}" class="auth-link">Back to Portfolio</a>
+                <a href="{{ url_for('graphics') }}" class="auth-link">View Graphics Page</a>
+            </div>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='admin-actions.js') }}" defer></script>
+</body>
+</html>

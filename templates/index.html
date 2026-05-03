@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joseph Saah | Designer & Developer</title>
+    <meta
+        name="description"
+        content="A modern portfolio for Joseph Saah, a graphic designer, web developer, web designer, and app developer."
+    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+        rel="stylesheet"
+    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <header class="site-header">
+            <nav class="nav">
+                <a class="brand" href="#home">
+                    <img src="{{ url_for('static', filename='profile.jpeg') }}" alt="Joseph Saah" class="brand-avatar">
+                    <span class="brand-name">Joseph Saah</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#about">About</a></li>
+                    <li><a href="{{ url_for('graphics') }}">Graphics</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="{{ url_for('admin_login') }}">Admin</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="site-main">
+            <section class="hero" id="home">
+                <div class="hero-copy">
+                    <p class="eyebrow">Graphic Designer / Web Developer / Web Designer / App Developer</p>
+                    <h1>Creating bold digital experiences through design, code, and creative thinking.</h1>
+                    <p class="hero-text">
+                        I am Joseph Saah, a multidisciplinary creative professional who blends
+                        graphic design, web design, web development, and app development to build
+                        modern experiences that are visually strong, functional, and user-focused.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#projects" class="btn btn-primary">Explore My Work</a>
+                        <a href="#contact" class="btn btn-secondary">Let&apos;s Connect</a>
+                    </div>
+                    <div class="hero-metrics">
+                        <div>
+                            <span class="metric-number">Design</span>
+                            <span class="metric-label">Visual concepts with strong identity</span>
+                        </div>
+                        <div>
+                            <span class="metric-number">Development</span>
+                            <span class="metric-label">Clean builds for web experiences</span>
+                        </div>
+                        <div>
+                            <span class="metric-number">Apps</span>
+                            <span class="metric-label">Ideas shaped into useful products</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="portrait-frame">
+                        <img src="{{ url_for('static', filename='profile.jpeg') }}" alt="Portrait of Joseph Saah" class="profile-img">
+                    </div>
+                    <div class="hero-card">
+                        <p class="hero-card-title">Current Focus</p>
+                        <p>
+                            Combining creativity and technology to design brands, websites, and
+                            apps that connect with people.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section about" id="about">
+                <div class="section-heading">
+                    <p class="eyebrow">About Me</p>
+                    <h2>Turning ideas into standout brands, websites, and app experiences.</h2>
+                    <p class="section-intro">
+                        My work brings design clarity and technical execution together so ideas are
+                        not only attractive, but also usable, responsive, and ready for real people.
+                    </p>
+                </div>
+                <div class="about-grid">
+                    <article class="panel">
+                        <p>
+                            I work at the intersection of creativity and technology, using graphic
+                            design and digital product thinking to create visuals and interfaces
+                            that are attractive, clear, and effective.
+                        </p>
+                    </article>
+                    <article class="panel">
+                        <p>
+                            From brand visuals and website layouts to frontend builds and app
+                            concepts, I care about making every project feel intentional,
+                            professional, and easy for people to use.
+                        </p>
+                    </article>
+                    <article class="panel panel-accent">
+                        <p class="card-tag">What I Do</p>
+                        <ul class="feature-list">
+                            <li>Build visual identities that give brands a confident presence.</li>
+                            <li>Design responsive websites with structure, flow, and personality.</li>
+                            <li>Create app ideas and interfaces that balance beauty with usability.</li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
+
+            <section class="section projects" id="projects">
+                <div class="section-heading">
+                    <p class="eyebrow">Projects</p>
+                    <h2>Examples of the kinds of creative and digital work I love to build.</h2>
+                    <p class="section-intro">
+                        Each project area reflects the way I combine visual thinking, modern layout,
+                        and practical problem-solving across different mediums.
+                    </p>
+                </div>
+                <div class="card-grid">
+                    {% if projects %}
+                        {% for project in projects %}
+                            <article
+                                class="project-card dynamic-project-card"
+                                data-project-preview-card
+                                data-project-category="{{ project.category }}"
+                                data-project-title="{{ project.title }}"
+                                data-project-description="{{ project.description }}"
+                                data-project-tags="{{ project.tags_list|join('||') }}"
+                                data-project-target="Main Portfolio"
+                                data-project-image="{{ project.image_url }}"
+                                data-project-link="{{ project.link }}"
+                                data-project-link-label="{{ project.link_label or 'View Project' }}"
+                            >
+                                {% if project.image_url %}
+                                    <div class="dynamic-media">
+                                        <img src="{{ project.image_url }}" alt="{{ project.title }}" class="dynamic-image">
+                                    </div>
+                                {% endif %}
+                                <p class="card-tag">{{ project.category }}</p>
+                                <h3>{{ project.title }}</h3>
+                                <p>{{ project.description }}</p>
+                                {% if project.tags_list %}
+                                    <div class="project-meta">
+                                        {% for tag in project.tags_list %}
+                                            <span>{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="project-card-actions">
+                                    <button type="button" class="project-preview-button" data-project-preview-button>
+                                        Preview Project
+                                    </button>
+                                    {% if project.link %}
+                                        <a href="{{ project.link }}" class="project-link" target="_blank" rel="noreferrer">
+                                            {{ project.link_label or "View Project" }}
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </article>
+                        {% endfor %}
+                    {% else %}
+                        <article class="project-card">
+                            <p class="card-tag">Graphic Design</p>
+                            <h3>Brand Identity System</h3>
+                            <p>
+                                A visual identity project focused on logo direction, brand colors,
+                                typography, and supporting assets that help a business stand out.
+                            </p>
+                            <div class="project-meta">
+                                <span>Branding</span>
+                                <span>Logos</span>
+                                <span>Identity Systems</span>
+                            </div>
+                            <a href="{{ url_for('graphics') }}" class="project-link">Open Graphics Portfolio</a>
+                        </article>
+                        <article class="project-card">
+                            <p class="card-tag">Web Design</p>
+                            <h3>Modern Business Website</h3>
+                            <p>
+                                A polished website concept with strong layout structure, responsive
+                                sections, and a user journey designed to build trust and drive action.
+                            </p>
+                            <div class="project-meta">
+                                <span>UI Layout</span>
+                                <span>Responsive Design</span>
+                                <span>User Flow</span>
+                            </div>
+                        </article>
+                        <article class="project-card">
+                            <p class="card-tag">App Development</p>
+                            <h3>Mobile App Interface</h3>
+                            <p>
+                                An app-focused concept that brings together interface design, usability,
+                                and practical features to create a smooth mobile experience.
+                            </p>
+                            <div class="project-meta">
+                                <span>Mobile UI</span>
+                                <span>Product Thinking</span>
+                                <span>Interaction Design</span>
+                            </div>
+                        </article>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="section skills" id="skills">
+                <div class="section-heading">
+                    <p class="eyebrow">Skills</p>
+                    <h2>Core strengths I bring into every project.</h2>
+                    <p class="section-intro">
+                        My process covers both creative direction and hands-on execution, which
+                        helps me move ideas from concept to polished delivery.
+                    </p>
+                </div>
+                <div class="skill-grid">
+                    <article class="skill-card">
+                        <p class="card-tag">Design</p>
+                        <h3>Graphic Design</h3>
+                        <p>Brand visuals, digital assets, promotional creatives, and polished layouts.</p>
+                    </article>
+                    <article class="skill-card">
+                        <p class="card-tag">Web</p>
+                        <h3>Web Design</h3>
+                        <p>Thoughtful page structures, visual hierarchy, and strong user journeys.</p>
+                    </article>
+                    <article class="skill-card">
+                        <p class="card-tag">Build</p>
+                        <h3>Web Development</h3>
+                        <p>Responsive frontend builds that turn design ideas into working experiences.</p>
+                    </article>
+                    <article class="skill-card">
+                        <p class="card-tag">Mobile</p>
+                        <h3>App Development</h3>
+                        <p>App concepts and interfaces shaped around usability, flow, and clarity.</p>
+                    </article>
+                    <article class="skill-card">
+                        <p class="card-tag">Systems</p>
+                        <h3>Responsive Thinking</h3>
+                        <p>Layouts that stay strong across desktop, tablet, and mobile screens.</p>
+                    </article>
+                    <article class="skill-card">
+                        <p class="card-tag">Experience</p>
+                        <h3>UI/UX Direction</h3>
+                        <p>Creative problem-solving focused on intuitive use and visual consistency.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="section contact" id="contact">
+                <div class="section-heading">
+                    <p class="eyebrow">Contact</p>
+                    <h2>Let&apos;s build something meaningful together.</h2>
+                    <p class="section-intro">
+                        If you need branding, a website, a visual refresh, or support shaping a
+                        digital product, this is the best place to start the conversation.
+                    </p>
+                </div>
+                <div class="contact-panel">
+                    <div class="contact-copy">
+                        <p class="card-tag">Start a Project</p>
+                        <p class="contact-lead">
+                            I am open to freelance work, collaborations, and creative digital
+                            projects across graphic design, web design, web development, and app
+                            development. If you have an idea to build, I would love to hear about it.
+                        </p>
+                        <div class="contact-highlight">
+                            <h3>What you can contact me for</h3>
+                            <ul class="feature-list">
+                                <li>Brand identity and graphic design projects</li>
+                                <li>Business websites and landing page design</li>
+                                <li>Frontend builds and app interface concepts</li>
+                            </ul>
+                        </div>
+                        <div class="contact-tags">
+                            <span>Freelance Projects</span>
+                            <span>Brand Identity</span>
+                            <span>Web Design</span>
+                            <span>App Ideas</span>
+                        </div>
+                    </div>
+                    <div class="contact-stack">
+                        <a
+                            href="https://wa.me/233593562527?text=Hello%20Joseph%2C%20I%20would%20like%20to%20work%20with%20you."
+                            class="contact-link whatsapp-link"
+                            aria-label="Contact Joseph Saah on WhatsApp"
+                        >
+                            <span class="whatsapp-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" role="img" focusable="false">
+                                    <path
+                                        d="M12 3.2A8.8 8.8 0 0 0 4.5 16.7L3.4 20.6l4-1A8.8 8.8 0 1 0 12 3.2Zm0 15.8a7 7 0 0 1-3.6-1l-.3-.2-2.3.6.6-2.2-.2-.3A7 7 0 1 1 12 19Zm3.4-5.2c-.2-.1-1.2-.6-1.4-.7-.2-.1-.3-.1-.5.1l-.4.5c-.1.2-.3.2-.5.1-.2-.1-.9-.3-1.6-1-.6-.5-1.1-1.2-1.2-1.4-.1-.2 0-.3.1-.4l.3-.4.2-.4c.1-.1 0-.3 0-.4l-.6-1.4c-.1-.2-.2-.2-.4-.2h-.3c-.1 0-.4.1-.6.3-.2.2-.7.7-.7 1.7s.7 2 1 2.4c.1.1 1.4 2.2 3.5 3 .5.2.9.3 1.2.4.5.2 1 .1 1.4.1.4-.1 1.2-.5 1.4-1 .2-.5.2-1 .1-1.1-.1 0-.3-.1-.5-.2Z"
+                                    />
+                                </svg>
+                            </span>
+                            <span class="contact-link-copy">
+                                <strong>Chat on WhatsApp</strong>
+                                <small>Fastest way to reach me directly</small>
+                            </span>
+                            <span class="contact-arrow" aria-hidden="true">-></span>
+                        </a>
+                        <div class="contact-card-grid">
+                            <div class="contact-card">
+                                <p class="card-tag">Email</p>
+                                <h3>
+                                    <a href="mailto:saahjoseph90@gmail.com" class="email-link">
+                                        saahjoseph90@gmail.com
+                                    </a>
+                                </h3>
+                                <p>
+                                    Send project briefs, collaboration requests, and business
+                                    inquiries directly to my inbox.
+                                </p>
+                            </div>
+                            <div class="contact-card">
+                                <p class="card-tag">Availability</p>
+                                <h3>Open for creative work</h3>
+                                <p>
+                                    Available for design, website, and digital product projects.
+                                    Add your phone number or response hours here if you want.
+                                </p>
+                            </div>
+                            <div class="contact-card contact-card-wide">
+                                <p class="card-tag">Social Profiles</p>
+                                <h3>Show More of Your Work</h3>
+                                <p>
+                                    Follow my work on TikTok and Instagram to explore more of my
+                                    design style, visual ideas, and creative updates.
+                                </p>
+                                <div class="social-links">
+                                    <a
+                                        href="https://www.tiktok.com/@josephsaah12?_r=1&_t=ZS-95nIJINRDS0"
+                                        class="social-link tiktok-link"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        aria-label="Visit Joseph Saah on TikTok"
+                                    >
+                                        <span class="social-icon" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" role="img" focusable="false">
+                                                <path
+                                                    d="M16.8 3c.4 1.8 1.5 3.2 3.2 4.1.8.4 1.6.7 2.5.7v3.2c-1.3 0-2.6-.3-3.8-.8-.6-.3-1.3-.7-1.9-1.2v7.1c0 1.1-.3 2.1-.9 3.1-.5.8-1.1 1.4-1.9 1.9-1 .6-2.1.9-3.2.9-.9 0-1.7-.2-2.5-.5a5.9 5.9 0 0 1-2.7-2.2 5.8 5.8 0 0 1 1.1-7.6 5.9 5.9 0 0 1 4.1-1.7c.3 0 .6 0 .9.1v3.2a3.5 3.5 0 0 0-2.7.8 2.7 2.7 0 0 0-1 2.2c0 .6.2 1.2.5 1.7.3.5.8.8 1.3 1 .4.2.8.3 1.3.3.7 0 1.3-.2 1.8-.6.4-.3.7-.7.9-1.2.1-.4.2-.8.2-1.2V3h3.2Z"
+                                                />
+                                            </svg>
+                                        </span>
+                                        <span class="social-copy">
+                                            <strong>TikTok</strong>
+                                            <small>@josephsaah12</small>
+                                        </span>
+                                    </a>
+                                    <a
+                                        href="https://www.instagram.com/josephsaah123?igsh=cnJoc3RvaThkOGo3"
+                                        class="social-link instagram-link"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        aria-label="Visit Joseph Saah on Instagram"
+                                    >
+                                        <span class="social-icon" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" role="img" focusable="false">
+                                                <path
+                                                    d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm0 1.8A3.7 3.7 0 0 0 3.8 7.5v9a3.7 3.7 0 0 0 3.7 3.7h9a3.7 3.7 0 0 0 3.7-3.7v-9a3.7 3.7 0 0 0-3.7-3.7h-9Zm9.7 1.4a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.8A3.2 3.2 0 1 0 12 15.2 3.2 3.2 0 0 0 12 8.8Z"
+                                                />
+                                            </svg>
+                                        </span>
+                                        <span class="social-copy">
+                                            <strong>Instagram</strong>
+                                            <small>@josephsaah123</small>
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-bottom">
+                            <p>Prefer email? Reach out anytime and I&apos;ll get back to you.</p>
+                            <a href="#home" class="btn btn-primary">Back to Top</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="preview-modal is-hidden" data-project-preview-modal>
+            <div class="preview-modal-backdrop" data-close-project-preview></div>
+            <div class="preview-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="site-preview-modal-title">
+                <button type="button" class="preview-modal-close" aria-label="Close preview" data-close-project-preview>
+                    x
+                </button>
+                <div class="preview-modal-layout">
+                    <div class="preview-modal-media" data-project-modal-media>
+                        <div class="placeholder-visual preview-modal-placeholder"></div>
+                    </div>
+                    <div class="preview-modal-copy">
+                        <p class="card-tag" data-project-modal-category>Project</p>
+                        <h2 id="site-preview-modal-title" data-project-modal-title>Project Preview</h2>
+                        <p class="preview-modal-target" data-project-modal-target>Main Portfolio</p>
+                        <p class="preview-modal-description" data-project-modal-description>
+                            Project details will appear here.
+                        </p>
+                        <div class="project-meta preview-modal-tags" data-project-modal-tags></div>
+                        <a href="#" class="project-link preview-modal-link is-hidden" data-project-modal-link>View Project</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <p class="footer-title">Joseph Saah</p>
+                    <p class="footer-text">
+                        Graphic designer, web designer, web developer, and app developer creating
+                        thoughtful digital experiences with style and purpose.
+                    </p>
+                </div>
+                <div class="footer-column">
+                    <p class="footer-heading">Quick Links</p>
+                    <a href="#about">About</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#skills">Skills</a>
+                    <a href="{{ url_for('admin_login') }}">Admin</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <div class="footer-column">
+                    <p class="footer-heading">Explore</p>
+                    <a href="{{ url_for('graphics') }}">Graphics Portfolio</a>
+                    <a href="mailto:saahjoseph90@gmail.com">saahjoseph90@gmail.com</a>
+                    <a href="#home">Back to Top</a>
+                    <div class="footer-socials">
+                        <a
+                            href="https://www.tiktok.com/@josephsaah12?_r=1&_t=ZS-95nIJINRDS0"
+                            class="footer-social-link tiktok-footer"
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label="Joseph Saah on TikTok"
+                        >
+                            <svg viewBox="0 0 24 24" role="img" focusable="false">
+                                <path
+                                    d="M16.8 3c.4 1.8 1.5 3.2 3.2 4.1.8.4 1.6.7 2.5.7v3.2c-1.3 0-2.6-.3-3.8-.8-.6-.3-1.3-.7-1.9-1.2v7.1c0 1.1-.3 2.1-.9 3.1-.5.8-1.1 1.4-1.9 1.9-1 .6-2.1.9-3.2.9-.9 0-1.7-.2-2.5-.5a5.9 5.9 0 0 1-2.7-2.2 5.8 5.8 0 0 1 1.1-7.6 5.9 5.9 0 0 1 4.1-1.7c.3 0 .6 0 .9.1v3.2a3.5 3.5 0 0 0-2.7.8 2.7 2.7 0 0 0-1 2.2c0 .6.2 1.2.5 1.7.3.5.8.8 1.3 1 .4.2.8.3 1.3.3.7 0 1.3-.2 1.8-.6.4-.3.7-.7.9-1.2.1-.4.2-.8.2-1.2V3h3.2Z"
+                                />
+                            </svg>
+                        </a>
+                        <a
+                            href="https://www.instagram.com/josephsaah123?igsh=cnJoc3RvaThkOGo3"
+                            class="footer-social-link instagram-footer"
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label="Joseph Saah on Instagram"
+                        >
+                            <svg viewBox="0 0 24 24" role="img" focusable="false">
+                                <path
+                                    d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm0 1.8A3.7 3.7 0 0 0 3.8 7.5v9a3.7 3.7 0 0 0 3.7 3.7h9a3.7 3.7 0 0 0 3.7-3.7v-9a3.7 3.7 0 0 0-3.7-3.7h-9Zm9.7 1.4a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.8A3.2 3.2 0 1 0 12 15.2 3.2 3.2 0 0 0 12 8.8Z"
+                                />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Joseph Saah. All rights reserved.</p>
+                <p>Designed and developed with care.</p>
+            </div>
+        </footer>
+    </div>
+    <script src="{{ url_for('static', filename='project-preview.js') }}" defer></script>
+</body>
+</html>
